@@ -5,10 +5,7 @@ import java.sql.Driver;
 import java.sql.DriverManager;
 import java.util.Enumeration;
 
-/**
- * Hello world!
- *
- */
+
 public class JDBCDemo 
 {
 	
