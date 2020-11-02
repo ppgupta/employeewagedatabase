@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -73,4 +74,12 @@ public class EmployeePayRollServiceTest
 			 System.out.println(employeePayRollList.size());
 			assertEquals(3, employeePayRollList.size());
 		}
+		//UC6
+				@Test
+				public void givenPayrollDataWhenAverageSalaryRetrievedByGenderShouldReturnProperValue() {
+					EmployeePayRollService employeePayrollService = new EmployeePayRollService();
+					List<EmployeePayRollData> employeePayRollData = employeePayrollService.readData(IOService.DB_IO);
+					Map<String,Double> averageSalaryByGender = employeePayrollService.readAverageSalaryByGender(IOService.DB_IO);
+					assertTrue(averageSalaryByGender.get("M").equals(2000000.00)&&averageSalaryByGender.get("F").equals(4000000.00));
+				}
 }

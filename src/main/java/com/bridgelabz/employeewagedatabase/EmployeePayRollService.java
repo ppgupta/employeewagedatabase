@@ -2,6 +2,7 @@ package com.bridgelabz.employeewagedatabase;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 import com.bridgelabz.employeewagedatabase.EmployeePayrollDBService.StatementType;
@@ -11,11 +12,11 @@ public class EmployeePayRollService {
 		CONSOLE_IO, FILE_IO, DB_IO, REST_IO
 	}
 
-	private EmployeePayrollDBService employeePayrollDB_IOService;
+	private EmployeePayrollDBService employeePayrollDBService;
 	private List<EmployeePayRollData> employeePayRollList;
 
 	public EmployeePayRollService() {
-		employeePayrollDB_IOService = EmployeePayrollDBService.getInstance();
+		employeePayrollDBService = EmployeePayrollDBService.getInstance();
 		this.employeePayRollList = new ArrayList<>();
 	}
 
@@ -71,7 +72,7 @@ public class EmployeePayRollService {
 			return employeePayRollList;
 		}
 		if (ioService.equals(IOService.DB_IO)) {
-			employeePayRollList = employeePayrollDB_IOService.readData();
+			employeePayRollList = employeePayrollDBService.readData();
 			return employeePayRollList;
 		}
 		return null;
@@ -79,14 +80,14 @@ public class EmployeePayRollService {
 
 	public List<EmployeePayRollData> getEmployeeListInStartDateRange(String date1, String date2, IOService ioService) {
 		if (ioService.equals(IOService.DB_IO)) {
-			return employeePayrollDB_IOService.getEmployeeListInRange(date1,date2);
+			return employeePayrollDBService.getEmployeeListInRange(date1,date2);
 		}
 		return null;
 	}
 
 	public void updateEmployeeSalary(String name, double salary, StatementType type) {
 		// check above
-		int result = employeePayrollDB_IOService.updateEmployeeData(name, salary, type);
+		int result = employeePayrollDBService.updateEmployeeData(name, salary, type);
 		if (result == 0)
 			return;
 		EmployeePayRollData employeePayRollData = this.getEmployeePayRollData(name);
@@ -103,7 +104,12 @@ public class EmployeePayRollService {
 	}
 
 	public boolean checkEmployeePayrollInSyncWithDB(String name) {
-		List<EmployeePayRollData> checkList = employeePayrollDB_IOService.getEmployeePayrollData(name);
+		List<EmployeePayRollData> checkList = employeePayrollDBService.getEmployeePayrollData(name);
 		return checkList.get(0).equals(getEmployeePayRollData(name));
+	}
+	public Map<String, Double> readAverageSalaryByGender(IOService ioService) {
+		if(ioService.equals(IOService.DB_IO))
+			return employeePayrollDBService.getAverageSalaryByGender();
+		return null;
 	}
 }

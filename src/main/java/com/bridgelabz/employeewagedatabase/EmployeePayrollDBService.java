@@ -8,7 +8,9 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.sql.Driver;
 
 
@@ -149,4 +151,21 @@ public class EmployeePayrollDBService {
 		
 		return employeePayrollList;
 	}
+	public Map<String, Double> getAverageSalaryByGender() {
+		String sql = "select gender, avg(salary) as avg_salary from employee_payroll group by gender;";
+		Map<String,Double> avgSalaryMap = new HashMap<>();
+		try(Connection connection = this.getConnection()){
+			Statement statement = connection.createStatement();
+			ResultSet resultSet = statement.executeQuery(sql);
+			while(resultSet.next()) {
+				String gender = resultSet.getString("gender");
+				Double salary = resultSet.getDouble("avg_salary");
+				avgSalaryMap.put(gender, salary);
+			}
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return avgSalaryMap;
+	}
+	
 	}
