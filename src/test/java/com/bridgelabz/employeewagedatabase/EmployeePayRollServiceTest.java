@@ -45,4 +45,13 @@ public class EmployeePayRollServiceTest
 		assertEquals(3,employeePayrollData.size());
 	}
 	
+	//UC3
+		public void givenNewSalaryForEmployeeWhenUpdatedShouldSyncWithDB() {
+			EmployeePayRollService employeePayrollService = new EmployeePayRollService();
+			List<EmployeePayRollData> employeePayRollData = employeePayrollService.readData(IOService.DB_IO);
+			employeePayrollService.updateEmployeeSalary("Terisa",4000000.00);
+			boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Terisa");
+			assertTrue(result);
+		}
+	
 }
