@@ -4,15 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import com.bridgelabz.employeewagedatabase.EmployeePayrollDBService.StatementType;
+
 public class EmployeePayRollService {
 	public enum IOService {
 		CONSOLE_IO, FILE_IO, DB_IO, REST_IO
 	}
-	private EmployeePayrollDBService employeePayrollDBService;
+	private EmployeePayrollDBService employeePayrollDB_IOService;
 	private List<EmployeePayRollData> employeePayRollList;
 
 	public EmployeePayRollService() {
-		employeePayrollDBService = EmployeePayrollDBService.getInstance();
+		employeePayrollDB_IOService = EmployeePayrollDBService.getInstance();
 		this.employeePayRollList = new ArrayList<>();
 	}
 
@@ -68,15 +70,14 @@ public class EmployeePayRollService {
 			return employeePayRollList;
 		}
 		if (ioService.equals(IOService.DB_IO)) {
-			employeePayRollList =employeePayrollDBService.readData();
+			employeePayRollList =employeePayrollDB_IOService.readData();
 			return employeePayRollList;
 		}
 		return null;
 	}
 
-	public void updateEmployeeSalary(String name, double salary) {
-		//check above
-		int result = employeePayrollDBService.updateEmployeeData(name, salary);
+	public void updateEmployeeSalary(String name, double salary,StatementType type) {
+		int result = employeePayrollDB_IOService.updateEmployeeData(name, salary,type);
 		if (result == 0)
 			return;
 		EmployeePayRollData employeePayRollData = this.getEmployeePayRollData(name);
@@ -93,7 +94,7 @@ public class EmployeePayRollService {
 	}
 
 	public boolean checkEmployeePayrollInSyncWithDB(String name) {
-		List<EmployeePayRollData> checkList = employeePayrollDBService.getEmployeePayrollData(name);
+		List<EmployeePayRollData> checkList = employeePayrollDB_IOService.getEmployeePayrollData(name);
 		return checkList.get(0).equals(getEmployeePayRollData(name));
 	}
 }

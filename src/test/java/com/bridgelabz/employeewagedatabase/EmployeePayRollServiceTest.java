@@ -10,6 +10,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.bridgelabz.employeewagedatabase.EmployeePayRollService.IOService;
+import com.bridgelabz.employeewagedatabase.EmployeePayrollDBService.StatementType;
 
 /**
  * Unit test for simple App.
@@ -38,20 +39,29 @@ public class EmployeePayRollServiceTest
 	}
 	
 	//UC2
-	@Test
-	public void givenEmployeePayrollInDbWhenRetrievedShouldMatchEmployeeCount() {
-		EmployeePayRollService employeePayrollService = new EmployeePayRollService();
-		List<EmployeePayRollData> employeePayrollData = employeePayrollService.readData(IOService.DB_IO);
-		assertEquals(3,employeePayrollData.size());
-	}
-	
-	//UC3
+		@Test
+		public void givenEmployeePayrollInDbWhenRetrievedShouldMatchEmployeeCount() {
+			EmployeePayRollService employeePayrollService = new EmployeePayRollService();
+			List<EmployeePayRollData> employeePayrollData = employeePayrollService.readData(IOService.DB_IO);
+			assertEquals(3,employeePayrollData.size());
+		}
+		
+		//UC3
 		public void givenNewSalaryForEmployeeWhenUpdatedShouldSyncWithDB() {
 			EmployeePayRollService employeePayrollService = new EmployeePayRollService();
 			List<EmployeePayRollData> employeePayRollData = employeePayrollService.readData(IOService.DB_IO);
-			employeePayrollService.updateEmployeeSalary("Terisa",4000000.00);
+			employeePayrollService.updateEmployeeSalary("Terisa",4000000.00,StatementType.STATEMENT);
 			boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Terisa");
 			assertTrue(result);
 		}
-	
+		
+	//UC4
+		@Test
+		public void givenNewSalaryForEmployeeWhenUpdatedShouldSyncWithDBUsingPreparedStatement() {
+			EmployeePayRollService employeePayrollService = new EmployeePayRollService();
+			List<EmployeePayRollData> employeePayRollData = employeePayrollService.readData(IOService.DB_IO);
+			employeePayrollService.updateEmployeeSalary("Terisa",4000000.00,StatementType.PREPARED_STATEMENT);
+			boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Terisa");
+			assertTrue(result);
+		}
 }

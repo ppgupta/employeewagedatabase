@@ -16,24 +16,23 @@ import java.sql.Statement;
 
 public class EmployeePayrollDBService {
 	
+	enum StatementType {
+		PREPARED_STATEMENT, STATEMENT;
+	}
+
 	private PreparedStatement employeePayrollDataStatement;
 	private static EmployeePayrollDBService employeePayrollDB_IOService;
 
 	private EmployeePayrollDBService() {
 	}
 
-	
-	private Connection getConnection() throws SQLException {
-		String jdbcURL = "jdbc:mysql://localhost:3306/payroll_services?SSL=false";
-		String userName = "root";
-		String password = "P@13091998";
-		Connection connection;
-		System.out.println("Connecting to database:"+jdbcURL);
-		connection = DriverManager.getConnection(jdbcURL,userName,password);
-		System.out.println("Connection is successful!   "+connection);
-		return connection;
-		
+	public static EmployeePayrollDBService getInstance() {
+		if (employeePayrollDB_IOService == null) {
+			employeePayrollDB_IOService = new EmployeePayrollDBService();
+		}
+		return employeePayrollDB_IOService;
 	}
+
 	public List<EmployeePayRollData> readData() {
 		String sql = "select * from employee_payroll;";
 		List<EmployeePayRollData> employeePayrollList = new ArrayList<>();
@@ -43,29 +42,34 @@ public class EmployeePayrollDBService {
 			ResultSet result = statement.executeQuery(sql);
 			employeePayrollList = this.getEmployeePayrollData(result);
 			connection.close();
-			// connection needs to be closed - notes
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return employeePayrollList;
 	}
 
-	
-	
-	public static EmployeePayrollDBService getInstance() {
-		if (employeePayrollDB_IOService == null) {
-			employeePayrollDB_IOService = new EmployeePayrollDBService();
-		}
-		return employeePayrollDB_IOService;
+	private Connection getConnection() throws SQLException {
+		String jdbcURL = "jdbc:mysql://localhost:3306/payroll_services?SSL=false";
+		String userName = "root";
+		String password = "P@13091998";
+		Connection connection;
+		System.out.println("Connecting to database:" + jdbcURL);
+		connection = DriverManager.getConnection(jdbcURL, userName, password);
+		System.out.println("Connection is successful!!  " + connection);
+		return connection;
+
 	}
 
-	
+	public int updateEmployeeData(String name, double salary, StatementType type) {
+		switch (type) {
+		case PREPARED_STATEMENT:
+			return this.updateEmployeeDataUsingPreparedStatement(name, salary);
+		case STATEMENT:
+			return this.updateEmployeeDataUsingStatement(name, salary);
+		default:
+			return 0;
+		}
 
-	
-
-	public int updateEmployeeData(String name, double salary) {
-		// return this.updateEmployeeDataUsingPreparedStatement(name, salary);
-		return this.updateEmployeeDataUsingStatement(name, salary);
 	}
 
 	private int updateEmployeeDataUsingStatement(String name, double salary) {
@@ -80,7 +84,33 @@ public class EmployeePayrollDBService {
 	}
 
 	private int updateEmployeeDataUsingPreparedStatement(String name, double salary) {
-		// TODO Auto-generated method stub
+		Connection connection = null;
+		PreparedStatement pStmt = null;
+		try {
+			connection = this.getConnection();
+			String sql = "update employee_payroll set salary = ? where name = ?;";
+			pStmt = connection.prepareStatement(sql);
+			pStmt.setDouble(1, salary);
+			pStmt.setString(2, name);
+			return pStmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (pStmt!=null) {
+				try {
+					pStmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 		return 0;
 	}
 
