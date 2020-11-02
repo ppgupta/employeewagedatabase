@@ -64,4 +64,13 @@ public class EmployeePayRollServiceTest
 			boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Terisa");
 			assertTrue(result);
 		}
+		//UC5
+		@Test
+		public void givenDateRangeWhenRetrievedShouldMatchEmployeeCount() {
+			EmployeePayRollService employeePayrollService = new EmployeePayRollService();
+			List<EmployeePayRollData> employeePayRollData = employeePayrollService.readData(IOService.DB_IO);
+			List<EmployeePayRollData> employeePayRollList = employeePayrollService.getEmployeeListInStartDateRange("2010-01-01","2020-12-12",IOService.DB_IO);
+			 System.out.println(employeePayRollList.size());
+			assertEquals(3, employeePayRollList.size());
+		}
 }
